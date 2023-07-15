@@ -1,5 +1,3 @@
-import org.jetbrains.compose.compose
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -28,6 +26,8 @@ kotlin {
                 implementation("io.ktor:ktor-client-logging:$ktorversion")
                 implementation("io.ktor:ktor-client-cio:$ktorversion")
                 implementation("io.ktor:ktor-client-json-jvm:$ktorversion")
+                implementation("androidx.compose.material3:material3:1.0.1")
+                implementation("androidx.compose.material3:material3-window-size-class:1.0.1")
             }
         }
         val commonTest by getting {
@@ -61,6 +61,9 @@ android {
     defaultConfig {
         minSdkVersion(24)
         targetSdkVersion(33)
+    }
+    buildFeatures {
+        compose = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

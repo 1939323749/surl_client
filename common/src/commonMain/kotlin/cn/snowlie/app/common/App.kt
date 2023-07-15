@@ -1,12 +1,22 @@
 package cn.snowlie.app.common
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -22,35 +32,88 @@ fun App() {
     var clickState by remember { mutableStateOf(false) }
 
     Column(
-        modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextField(
-            value = text,
-            onValueChange = { newtext ->
-                text = newtext
-            },
-            label = { Text("Input URL") }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .weight(3f)
+                .align(Alignment.CenterHorizontally)
         )
-        Button(onClick = {
-            clickState = !clickState
-        }) {
-            Text("shortUrl")
-        }
-        if (shortUrl.isNotEmpty()) {
-            TextField(
-                value = shortUrl,
-                onValueChange = { newtext ->
-                    shortUrl = newtext
-                },
-                label = { Text("shortUrl") }
-            )
-        }
-    }
-    LaunchedEffect(clickState) {
-        if (clickState) {
-            shortUrl = getShortUrl(text)
-        }
+        {
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { newtext ->
+                        text = newtext
+                    },
+                    label = { Text("Input URL") },
+                    shape = RoundedCornerShape(30.dp),
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = Color.Black,
+                        unfocusedBorderColor = Color.Transparent
+                    ),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            text = ""
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = "Clear",
+                                tint = Color.Gray
+                            )
+                        }
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Clear",
+                            tint = Color.Gray
+                        )
+                    },
+                )
+                Button(
+                    onClick = {
+                        clickState = !clickState
+                    },
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+                ) {
+                    Text("shortUrl")
+                }
+
+                if (shortUrl.isNotEmpty()) {
+                    Column {
+                        Text(
+                            text = "Short Url",
+                            style = TextStyle(
+                                color = Color.Black,
+                                fontSize = 16.sp
+                            )
+                        )
+                        SelectionContainer {
+                            Text(
+                                text = shortUrl,
+                                style = TextStyle(
+                                    color = Color.Black,
+                                    fontSize = 16.sp
+                                )
+                            )
+                        }
+                    }
+
+                }
+            }
+            LaunchedEffect(clickState) {
+                if (clickState) {
+                    shortUrl = getShortUrl(text)
+                }
+            }
+            }
+        Spacer(modifier = Modifier.weight(1f))
+
     }
 }
 
