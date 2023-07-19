@@ -24,7 +24,16 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
+@Serializable
+data class UrlResponse(
+    val ShortUrl: String,
+    val LongUrl: String,
+    val ClickCount: Int
+)
 @Composable
 fun App() {
     var text by remember { mutableStateOf("") }
@@ -79,7 +88,7 @@ fun App() {
                     onClick = {
                         clickState = !clickState
                     },
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
+                    shape = RoundedCornerShape(10.dp),
                 ) {
                     Text("shortUrl")
                 }
@@ -108,19 +117,18 @@ fun App() {
             }
             LaunchedEffect(clickState) {
                 if (clickState) {
-                    shortUrl = getShortUrl(text)
+                    shortUrl = "https://snowlie.cn/"+getShortUrl(text).ShortUrl
                 }
             }
             }
         Spacer(modifier = Modifier.weight(1f))
-
     }
 }
 
 data class Url(val url: String)
 
 @OptIn(InternalAPI::class)
-private suspend fun getShortUrl(text: String): String = runBlocking {
+private suspend fun getShortUrl(text: String): UrlResponse = runBlocking {
     try {
         val url = Url("https://snowlie.cn")
         val responsePost: HttpResponse = HttpClient().use { client ->
@@ -136,13 +144,9 @@ private suspend fun getShortUrl(text: String): String = runBlocking {
         }
         val responseString = responsePost.bodyAsText()
 
-        url.url + "/" + responseString
-            .replace("\"", "")
-            .replace("{", "")
-            .replace("}", "")
-            .replace("shortUrl:", "")
+        Json.decodeFromString<UrlResponse>(responseString)
     } catch (e: Exception) {
         e.printStackTrace()
-        ""
+        UrlResponse("", "", 0)
     }
 }

@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.serialization") version "1.5.20"
     id("org.jetbrains.compose")
     id("com.android.library")
 }
@@ -8,6 +9,7 @@ group = "cn.snowlie.app"
 version = "1.0-SNAPSHOT"
 
 val ktorversion = "2.3.2"
+val serialization_version = "1.5.0"
 
 kotlin {
     android()
@@ -16,6 +18,10 @@ kotlin {
     }
     sourceSets {
         val commonMain by getting {
+            repositories {
+                maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+                maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlinx")
+            }
             dependencies {
                 api(compose.runtime)
                 api(compose.foundation)
@@ -26,8 +32,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-logging:$ktorversion")
                 implementation("io.ktor:ktor-client-cio:$ktorversion")
                 implementation("io.ktor:ktor-client-json-jvm:$ktorversion")
-                implementation("androidx.compose.material3:material3:1.0.1")
-                implementation("androidx.compose.material3:material3-window-size-class:1.0.1")
+                implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version")
             }
         }
         val commonTest by getting {
