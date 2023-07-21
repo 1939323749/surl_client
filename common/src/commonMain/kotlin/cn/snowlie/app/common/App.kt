@@ -116,8 +116,8 @@ fun App() {
                 }
             }
             LaunchedEffect(clickState) {
-                if (clickState) {
-                    shortUrl = "https://snowlie.cn/"+getShortUrl(text).ShortUrl
+                if (clickState&&text.isNotEmpty()) {
+                    shortUrl = getShortUrl(text)
                 }
             }
             }
@@ -128,7 +128,7 @@ fun App() {
 data class Url(val url: String)
 
 @OptIn(InternalAPI::class)
-private suspend fun getShortUrl(text: String): UrlResponse = runBlocking {
+private suspend fun getShortUrl(text: String): String = runBlocking {
     try {
         val url = Url("https://snowlie.cn")
         val responsePost: HttpResponse = HttpClient().use { client ->
@@ -143,10 +143,9 @@ private suspend fun getShortUrl(text: String): UrlResponse = runBlocking {
             }
         }
         val responseString = responsePost.bodyAsText()
-
-        Json.decodeFromString<UrlResponse>(responseString)
+        "https://snowlie.cn/"+Json.decodeFromString<UrlResponse>(responseString).ShortUrl
     } catch (e: Exception) {
         e.printStackTrace()
-        UrlResponse("", "", 0)
+        "error occurred"
     }
 }
